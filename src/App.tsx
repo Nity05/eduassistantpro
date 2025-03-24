@@ -4,8 +4,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from "@clerk/clerk-react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import Dashboard from "./pages/Dashboard";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -29,11 +33,33 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ClerkLoading>
+            <div className="h-screen w-full flex items-center justify-center">
+              <div className="animate-pulse w-10 h-10 rounded-full bg-primary/20"></div>
+            </div>
+          </ClerkLoading>
+          <ClerkLoaded>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/sign-in/*" element={<SignIn />} />
+              <Route path="/sign-up/*" element={<SignUp />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <>
+                    <SignedIn>
+                      <Dashboard />
+                    </SignedIn>
+                    <SignedOut>
+                      <Index />
+                    </SignedOut>
+                  </>
+                } 
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ClerkLoaded>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

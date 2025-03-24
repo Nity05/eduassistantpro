@@ -1,12 +1,15 @@
-
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Sun, Moon } from "lucide-react";
+import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/clerk-react";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +61,9 @@ const Navbar = () => {
               <NavLink href="/#about">About</NavLink>
               <NavLink href="/#testimonials">Testimonials</NavLink>
               <NavLink href="/#contact">Contact</NavLink>
+              {isSignedIn && (
+                <NavLink href="/dashboard">Dashboard</NavLink>
+              )}
             </div>
 
             <div className="flex items-center gap-4">
@@ -68,9 +74,19 @@ const Navbar = () => {
               >
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-              <button className="bg-primary text-white px-5 py-2 rounded-full font-medium hover:bg-primary/90 transition-colors">
-                Sign Up
-              </button>
+              
+              {isSignedIn ? (
+                <UserButton afterSignOutUrl="/" />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <SignInButton mode="modal">
+                    <Button variant="ghost">Sign In</Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button>Sign Up</Button>
+                  </SignUpButton>
+                </div>
+              )}
             </div>
           </div>
 
@@ -83,6 +99,9 @@ const Navbar = () => {
             >
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
+            {isSignedIn && (
+              <UserButton afterSignOutUrl="/" />
+            )}
             <button
               onClick={toggleMenu}
               className="p-2 rounded-full hover:bg-secondary transition-colors"
@@ -114,9 +133,21 @@ const Navbar = () => {
           <MobileNavLink href="/#contact" onClick={() => setIsMenuOpen(false)}>
             Contact
           </MobileNavLink>
-          <button className="bg-primary text-white px-5 py-2 rounded-full font-medium hover:bg-primary/90 transition-colors w-full mt-4">
-            Sign Up
-          </button>
+          {isSignedIn && (
+            <MobileNavLink href="/dashboard" onClick={() => setIsMenuOpen(false)}>
+              Dashboard
+            </MobileNavLink>
+          )}
+          {!isSignedIn ? (
+            <>
+              <SignInButton mode="modal">
+                <Button variant="ghost" className="w-full">Sign In</Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button className="w-full">Sign Up</Button>
+              </SignUpButton>
+            </>
+          ) : null}
         </div>
       </div>
     </nav>
