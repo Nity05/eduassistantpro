@@ -15,13 +15,6 @@ createRoot(document.getElementById("root")!).render(
   <ClerkProvider 
     publishableKey={PUBLISHABLE_KEY}
     clerkJSVersion="5.56.0-snapshot.v20250312225817"
-    signInUrl="/sign-in"
-    signUpUrl="/sign-up"
-    signInFallbackRedirectUrl="/dashboard"
-    signUpFallbackRedirectUrl="/"
-    signInForceRedirectUrl="/dashboard"
-    signUpForceRedirectUrl="/"
-    afterSignOutUrl="/"
   >
     <App />
   </ClerkProvider>
