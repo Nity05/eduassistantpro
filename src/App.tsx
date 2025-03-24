@@ -8,9 +8,6 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 
-// Add framer-motion
-<lov-add-dependency>framer-motion@latest</lov-add-dependency>
-
 const queryClient = new QueryClient();
 
 const App = () => {
