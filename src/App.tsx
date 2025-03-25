@@ -11,6 +11,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import ATSResume from "./pages/ATSResume";
+import Quiz from "./pages/Quiz";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => {
               <Route path="/sign-in/*" element={<SignIn />} />
               <Route path="/sign-up/*" element={<SignUp />} />
               <Route path="/ats-resume" element={<ATSResume />} />
+              <Route path="/quiz" element={<Quiz />} />
               <Route 
                 path="/dashboard" 
                 element={
