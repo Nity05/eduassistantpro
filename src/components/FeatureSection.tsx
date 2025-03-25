@@ -15,7 +15,7 @@ const FeatureSection = () => {
       icon: <FileText size={24} />,
       title: "ChatWithPDF",
       description: "Interact with research papers naturally. Ask questions, get summaries, and extract key insights with ease.",
-      link: "#"
+      link: "/chat-with-pdf"
     },
     {
       icon: <FileSearch size={24} />,

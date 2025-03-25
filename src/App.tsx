@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import ATSResume from "./pages/ATSResume";
 import Quiz from "./pages/Quiz";
+import ChatWithPDF from "./pages/ChatWithPDF";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => {
               <Route path="/sign-up/*" element={<SignUp />} />
               <Route path="/ats-resume" element={<ATSResume />} />
               <Route path="/quiz" element={<Quiz />} />
+              <Route path="/chat-with-pdf" element={<ChatWithPDF />} />
               <Route 
                 path="/dashboard" 
                 element={
