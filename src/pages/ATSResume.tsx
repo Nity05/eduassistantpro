@@ -79,12 +79,17 @@ const ATSResume = () => {
     try {
       toast.info("Analyzing your resume...", {
         description: "This may take a minute or two to complete.",
-        duration: 5000,
+        duration: 10000,
       });
       
       const response = await fetch("https://atsresume.onrender.com/analyze", {
         method: "POST",
         body: formData,
+        // Ensure no CORS issues
+        mode: "cors",
+        headers: {
+          // Do not set Content-Type as it's set automatically with boundary for FormData
+        },
       });
       
       if (!response.ok) {
@@ -190,7 +195,7 @@ const ATSResume = () => {
               <h2 className="text-xl font-semibold mb-4">Analysis in Progress</h2>
               <Progress value={isLoading ? 75 : 0} className="mb-4" />
               <p className="text-sm text-muted-foreground">
-                Our AI is analyzing your resume against the job description. This may take a minute or two.
+                Our AI is analyzing your resume against the job description. This can take up to 2-3 minutes due to the complexity of analysis.
               </p>
             </div>
           )}
