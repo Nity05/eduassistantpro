@@ -9,7 +9,7 @@ const FeatureSection = () => {
       icon: <FileQuestion size={24} />,
       title: "AI Quiz Generator",
       description: "Creates customized quizzes from GATE PYQs, tailored to your learning needs with adaptive difficulty levels.",
-      link: "#"
+      link: "/quiz"
     },
     {
       icon: <FileText size={24} />,
