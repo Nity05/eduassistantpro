@@ -1,28 +1,33 @@
 
 import { FileQuestion, FileText, FileSearch, Github } from "lucide-react";
 import FeatureCard from "./FeatureCard";
+import { Link } from "react-router-dom";
 
 const FeatureSection = () => {
   const features = [
     {
       icon: <FileQuestion size={24} />,
       title: "AI Quiz Generator",
-      description: "Creates customized quizzes from GATE PYQs, tailored to your learning needs with adaptive difficulty levels."
+      description: "Creates customized quizzes from GATE PYQs, tailored to your learning needs with adaptive difficulty levels.",
+      link: "#"
     },
     {
       icon: <FileText size={24} />,
       title: "ChatWithPDF",
-      description: "Interact with research papers naturally. Ask questions, get summaries, and extract key insights with ease."
+      description: "Interact with research papers naturally. Ask questions, get summaries, and extract key insights with ease.",
+      link: "#"
     },
     {
       icon: <FileSearch size={24} />,
       title: "ATS Resume Analyzer",
-      description: "Get detailed feedback on your resume's ATS compatibility, with specific suggestions to improve visibility to employers."
+      description: "Get detailed feedback on your resume's ATS compatibility, with specific suggestions to improve visibility to employers.",
+      link: "/ats-resume"
     },
     {
       icon: <Github size={24} />,
       title: "Chat with GitHub Repo",
-      description: "Understand complex codebases by asking questions directly about the repository structure, functions, and more."
+      description: "Understand complex codebases by asking questions directly about the repository structure, functions, and more.",
+      link: "#"
     }
   ];
 
@@ -47,13 +52,14 @@ const FeatureSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
           {features.map((feature, index) => (
-            <FeatureCard
-              key={index}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-              index={index}
-            />
+            <Link to={feature.link} key={index} className="block">
+              <FeatureCard
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                index={index}
+              />
+            </Link>
           ))}
         </div>
       </div>

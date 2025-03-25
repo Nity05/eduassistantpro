@@ -1,6 +1,8 @@
 
 import { useUser } from "@clerk/clerk-react";
 import MainLayout from "../layout/MainLayout";
+import { Link } from "react-router-dom";
+import { FileText } from "lucide-react";
 
 const Dashboard = () => {
   const { user, isLoaded } = useUser();
@@ -32,7 +34,10 @@ const Dashboard = () => {
                   <a href="#chat-pdf">Chat with PDF</a>
                 </li>
                 <li className="text-muted-foreground hover:text-foreground transition-colors">
-                  <a href="#resume">ATS Resume Analyzer</a>
+                  <Link to="/ats-resume" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    ATS Resume Analyzer
+                  </Link>
                 </li>
                 <li className="text-muted-foreground hover:text-foreground transition-colors">
                   <a href="#github">Chat with GitHub Repo</a>
