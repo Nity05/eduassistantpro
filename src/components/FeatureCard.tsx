@@ -13,23 +13,45 @@ const FeatureCard = ({ icon, title, description, index }: FeatureCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <div 
-      className="glass-card p-6 md:p-8 hover-scale"
+    <motion.div 
+      className="relative overflow-hidden rounded-2xl backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg transition-all duration-300 h-full"
+      style={{ 
+        background: isHovered ? 'linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05))' : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ 
-        animationDelay: `${index * 0.1}s`,
+      whileHover={{ 
+        y: -5,
+        boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
       }}
     >
-      <div className="bg-primary/10 p-3 rounded-full w-14 h-14 flex items-center justify-center text-primary mb-6 relative overflow-hidden group">
-        <div className={`transition-all duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}>
-          {icon}
+      <div className="p-6 md:p-8">
+        <div className="relative z-10">
+          <div 
+            className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 transition-all duration-500 ${isHovered ? 'bg-primary/20' : 'bg-primary/10'}`}
+          >
+            <div className={`text-primary transition-all duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}>
+              {icon}
+            </div>
+          </div>
+          
+          <h3 className="text-xl md:text-2xl font-bold mb-3">{title}</h3>
+          <p className="text-muted-foreground">{description}</p>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
       </div>
-      <h3 className="text-xl md:text-2xl font-bold mb-3">{title}</h3>
-      <p className="text-muted-foreground">{description}</p>
-    </div>
+      
+      {isHovered && (
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
+    </motion.div>
   );
 };
 
