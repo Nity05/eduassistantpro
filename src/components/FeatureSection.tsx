@@ -27,7 +27,7 @@ const FeatureSection = () => {
       icon: <Github size={24} />,
       title: "Chat with GitHub Repo",
       description: "Understand complex codebases by asking questions directly about the repository structure, functions, and more.",
-      link: "#"
+      link: "/chat-with-github"
     }
   ];
 

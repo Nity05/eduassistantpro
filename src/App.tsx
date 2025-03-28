@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import ATSResume from "./pages/ATSResume";
 import Quiz from "./pages/Quiz";
 import ChatWithPDF from "./pages/ChatWithPDF";
+import ChatWithGitHub from "./pages/ChatWithGitHub";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="/ats-resume" element={<ATSResume />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/chat-with-pdf" element={<ChatWithPDF />} />
+              <Route path="/chat-with-github" element={<ChatWithGitHub />} />
               <Route 
                 path="/dashboard" 
                 element={
