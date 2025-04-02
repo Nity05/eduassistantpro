@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import MainLayout from "../layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import ChatHistory from "@/components/ChatHistory";
 import { useChatStorage } from "@/hooks/useChatStorage";
+import ReactMarkdown from "react-markdown";
 
 const ChatWithPDF = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -44,10 +44,8 @@ const ChatWithPDF = () => {
     }
   }, [messages]);
   
-  // Save chat whenever messages change
   useEffect(() => {
     if (messages.length > 0 && isProcessed) {
-      // Use filename as title if available
       const title = file 
         ? file.name.substring(0, 30) 
         : `Chat ${new Date().toLocaleString()}`;
@@ -56,7 +54,6 @@ const ChatWithPDF = () => {
     }
   }, [messages, isProcessed]);
   
-  // Load chat when currentChatId changes
   useEffect(() => {
     if (currentChatId) {
       const chat = getChat(currentChatId);
@@ -235,7 +232,6 @@ const ChatWithPDF = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Chat History Sidebar */}
             <div className="md:col-span-1">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Previous Research Papers</h2>
@@ -257,7 +253,6 @@ const ChatWithPDF = () => {
               />
             </div>
             
-            {/* Main Chat Area */}
             <div className="md:col-span-2">
               {!isProcessed ? (
                 <Card className="mb-6">
@@ -364,7 +359,13 @@ const ChatWithPDF = () => {
                               : 'bg-muted'
                           }`}
                         >
-                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                          {message.role === 'assistant' ? (
+                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
+                              <ReactMarkdown>{message.content}</ReactMarkdown>
+                            </div>
+                          ) : (
+                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                          )}
                         </div>
                       </div>
                     ))}

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
+import ReactMarkdown from "react-markdown";
 
 interface ChatHistoryProps {
   history: Array<{
