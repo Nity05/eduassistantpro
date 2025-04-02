@@ -1,9 +1,9 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sphere, MeshDistortMaterial } from "@react-three/drei";
 import { useTheme } from "next-themes";
-import * as THREE from "three"; // Importing THREE explicitly
+import * as THREE from "three";
 
 const AnimatedSphere = () => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -11,15 +11,16 @@ const AnimatedSphere = () => {
   
   useFrame(() => {
     if (meshRef.current) {
-      meshRef.current.rotation.x = meshRef.current.rotation.x += 0.003;
-      meshRef.current.rotation.y = meshRef.current.rotation.y += 0.003;
+      meshRef.current.rotation.x += 0.003;
+      meshRef.current.rotation.y += 0.003;
     }
   });
 
   const primaryColor = theme === "dark" ? "#396cd8" : "#396cd8";
   
   return (
-    <Sphere args={[1.6, 64, 64]} ref={meshRef}>
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[1.6, 64, 64]} />
       <MeshDistortMaterial
         color={primaryColor}
         attach="material"
@@ -30,11 +31,20 @@ const AnimatedSphere = () => {
         opacity={0.15}
         transparent={true}
       />
-    </Sphere>
+    </mesh>
   );
 };
 
 const Background3D: React.FC = () => {
+  const [mounted, setMounted] = useState(false);
+  
+  // Fix hydration issues by only rendering on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="fixed inset-0 -z-10 opacity-90">
       <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>

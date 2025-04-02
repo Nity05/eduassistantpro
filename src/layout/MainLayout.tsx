@@ -9,10 +9,35 @@ interface MainLayoutProps {
   children: React.ReactNode;
 }
 
+// Simple error boundary for 3D components
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null; // Return null to hide the component on error
+    }
+
+    return this.props.children;
+  }
+}
+
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Background3D />
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <Background3D />
+        </Suspense>
+      </ErrorBoundary>
+      
       <ClerkLoading>
         <div className="fixed top-0 left-0 w-full z-50 py-4 px-6 glass-panel">
           <div className="flex items-center justify-between">
@@ -24,9 +49,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           </div>
         </div>
       </ClerkLoading>
+      
       <ClerkLoaded>
         <Navbar />
       </ClerkLoaded>
+      
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
