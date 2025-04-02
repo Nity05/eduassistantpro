@@ -3,6 +3,7 @@ import React, { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sphere, MeshDistortMaterial } from "@react-three/drei";
 import { useTheme } from "next-themes";
+import * as THREE from "three"; // Importing THREE explicitly
 
 const AnimatedSphere = () => {
   const meshRef = useRef<THREE.Mesh>(null);
