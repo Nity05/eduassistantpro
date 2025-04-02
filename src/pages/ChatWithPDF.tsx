@@ -1,31 +1,72 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MainLayout from "../layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, FileText, Send, Upload } from "lucide-react";
+import { AlertCircle, FileText, Send, Upload, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator"; 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
+import ChatHistory from "@/components/ChatHistory";
+import { useChatStorage } from "@/hooks/useChatStorage";
 
 const ChatWithPDF = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessed, setIsProcessed] = useState(false);
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
+  const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string, timestamp: Date }[]>([]);
   const [isAskingQuestion, setIsAskingQuestion] = useState(false);
-  const [sessionId, setSessionId] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string>(uuidv4());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const {
+    chatHistory,
+    currentChatId,
+    setCurrentChatId,
+    saveChat,
+    deleteChat,
+    getChat
+  } = useChatStorage("pdf-chat-history");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [messages]);
+  
+  // Save chat whenever messages change
+  useEffect(() => {
+    if (messages.length > 0 && isProcessed) {
+      // Use filename as title if available
+      const title = file 
+        ? file.name.substring(0, 30) 
+        : `Chat ${new Date().toLocaleString()}`;
+        
+      saveChat(sessionId, title, messages);
+    }
+  }, [messages, isProcessed]);
+  
+  // Load chat when currentChatId changes
+  useEffect(() => {
+    if (currentChatId) {
+      const chat = getChat(currentChatId);
+      if (chat) {
+        setSessionId(chat.id);
+        setMessages(chat.messages);
+        setIsProcessed(true);
+      }
+    }
+  }, [currentChatId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -76,7 +117,8 @@ const ChatWithPDF = () => {
       setMessages([
         { 
           role: 'assistant', 
-          content: "PDF processed successfully! I'm ready to answer questions about this research paper. What would you like to know?" 
+          content: "PDF processed successfully! I'm ready to answer questions about this research paper. What would you like to know?",
+          timestamp: new Date()
         }
       ]);
       
@@ -116,7 +158,8 @@ const ChatWithPDF = () => {
     }
 
     const userQuestion = question.trim();
-    setMessages(prev => [...prev, { role: 'user', content: userQuestion }]);
+    const timestamp = new Date();
+    setMessages(prev => [...prev, { role: 'user', content: userQuestion, timestamp }]);
     setQuestion("");
     setIsAskingQuestion(true);
 
@@ -135,7 +178,8 @@ const ChatWithPDF = () => {
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+      const timestamp = new Date();
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response, timestamp }]);
     } catch (error) {
       console.error("Error asking question:", error);
       toast({
@@ -146,7 +190,8 @@ const ChatWithPDF = () => {
       
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "I'm sorry, I encountered an error while processing your question. Please try again." 
+        content: "I'm sorry, I encountered an error while processing your question. Please try again.",
+        timestamp: new Date()
       }]);
     } finally {
       setIsAskingQuestion(false);
@@ -164,17 +209,22 @@ const ChatWithPDF = () => {
   const resetChat = () => {
     setFile(null);
     setIsProcessed(false);
-    setSessionId("");
+    setSessionId(uuidv4());
     setMessages([]);
+    setCurrentChatId(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+  
+  const startNewChat = () => {
+    resetChat();
   };
 
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-4 tracking-tight">
               Chat with Research <span className="text-gradient">Papers</span>
@@ -184,133 +234,172 @@ const ChatWithPDF = () => {
             </p>
           </div>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Upload Research Paper
-              </CardTitle>
-              <CardDescription>
-                Upload a PDF file to start chatting with its content
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid w-full max-w-sm items-center gap-1.5 mx-auto">
-                <Input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  disabled={isUploading || isProcessed}
-                  className="cursor-pointer"
-                />
-                {file && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Selected: {file.name}
-                  </p>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-center gap-2">
-              <Button 
-                onClick={uploadFile} 
-                disabled={!file || isUploading || isProcessed}
-                className="w-full max-w-xs"
-              >
-                {isUploading ? (
-                  <>
-                    <span className="animate-spin mr-2">
-                      <Upload className="h-4 w-4" />
-                    </span>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload & Process PDF
-                  </>
-                )}
-              </Button>
-              {isProcessed && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Chat History Sidebar */}
+            <div className="md:col-span-1">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Previous Research Papers</h2>
                 <Button 
                   variant="outline" 
-                  onClick={resetChat}
-                  className="w-full max-w-xs"
+                  size="sm" 
+                  onClick={startNewChat} 
+                  className="flex items-center gap-1"
                 >
-                  Reset & Upload New PDF
+                  <Plus className="h-4 w-4" /> New Chat
                 </Button>
-              )}
-            </CardFooter>
-          </Card>
-
-          {!isProcessed && messages.length === 0 && (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Getting Started</AlertTitle>
-              <AlertDescription>
-                Upload a research paper PDF to begin the conversation. You'll be able to ask 
-                questions about the paper's content after processing.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {messages.length > 0 && (
-            <div className="mb-4 border rounded-lg overflow-hidden">
-              <div className="p-4 bg-muted/50">
-                <h3 className="font-medium">Conversation</h3>
               </div>
-              <Separator />
-              <div className="p-4 max-h-[400px] overflow-y-auto">
-                {messages.map((message, index) => (
-                  <div 
-                    key={index} 
-                    className={`mb-4 ${
-                      message.role === 'user' 
-                        ? 'ml-auto text-right' 
-                        : ''
-                    }`}
-                  >
-                    <div 
-                      className={`inline-block max-w-[80%] rounded-lg p-3 ${
-                        message.role === 'user' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted'
-                      }`}
+              
+              <ChatHistory 
+                history={chatHistory}
+                currentChatId={currentChatId}
+                onSelectChat={(id) => setCurrentChatId(id)}
+                onDeleteChat={deleteChat}
+              />
+            </div>
+            
+            {/* Main Chat Area */}
+            <div className="md:col-span-2">
+              {!isProcessed ? (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      Upload Research Paper
+                    </CardTitle>
+                    <CardDescription>
+                      Upload a PDF file to start chatting with its content
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid w-full max-w-sm items-center gap-1.5 mx-auto">
+                      <Input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        disabled={isUploading || isProcessed}
+                        className="cursor-pointer"
+                      />
+                      {file && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Selected: {file.name}
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-center gap-2">
+                    <Button 
+                      onClick={uploadFile} 
+                      disabled={!file || isUploading || isProcessed}
+                      className="w-full max-w-xs"
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      {isUploading ? (
+                        <>
+                          <span className="animate-spin mr-2">
+                            <Upload className="h-4 w-4" />
+                          </span>
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload & Process PDF
+                        </>
+                      )}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ) : (
+                <div className="mb-4">
+                  <Alert>
+                    <FileText className="h-4 w-4" />
+                    <AlertTitle>PDF Processed</AlertTitle>
+                    <AlertDescription>
+                      {file ? `File: ${file.name}` : "Ready to answer questions"}
+                    </AlertDescription>
+                  </Alert>
+                  <div className="mt-4 text-right">
+                    <Button 
+                      variant="outline" 
+                      onClick={resetChat}
+                      size="sm"
+                    >
+                      Reset & Upload New PDF
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {!isProcessed && messages.length === 0 && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Getting Started</AlertTitle>
+                  <AlertDescription>
+                    Upload a research paper PDF to begin the conversation. You'll be able to ask 
+                    questions about the paper's content after processing.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {messages.length > 0 && (
+                <div className="mb-4 border rounded-lg overflow-hidden">
+                  <div className="p-4 bg-muted/50">
+                    <h3 className="font-medium">Conversation</h3>
+                  </div>
+                  <Separator />
+                  <div className="p-4 max-h-[400px] overflow-y-auto">
+                    {messages.map((message, index) => (
+                      <div 
+                        key={index} 
+                        className={`mb-4 ${
+                          message.role === 'user' 
+                            ? 'ml-auto text-right' 
+                            : ''
+                        }`}
+                      >
+                        <div 
+                          className={`inline-block max-w-[80%] rounded-lg p-3 ${
+                            message.role === 'user' 
+                              ? 'bg-primary text-primary-foreground' 
+                              : 'bg-muted'
+                          }`}
+                        >
+                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </div>
+                  <Separator />
+                  <div className="p-4">
+                    <div className="flex gap-2">
+                      <Textarea
+                        placeholder="Ask a question about the research paper..."
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        disabled={!isProcessed || isAskingQuestion}
+                        className="min-h-[60px] resize-none"
+                      />
+                      <Button 
+                        onClick={askQuestion} 
+                        disabled={!isProcessed || isAskingQuestion || !question.trim()}
+                        className="shrink-0"
+                      >
+                        {isAskingQuestion ? (
+                          <span className="animate-spin">
+                            <Send className="h-4 w-4" />
+                          </span>
+                        ) : (
+                          <Send className="h-4 w-4" />
+                        )}
+                      </Button>
                     </div>
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-              <Separator />
-              <div className="p-4">
-                <div className="flex gap-2">
-                  <Textarea
-                    placeholder="Ask a question about the research paper..."
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    disabled={!isProcessed || isAskingQuestion}
-                    className="min-h-[60px] resize-none"
-                  />
-                  <Button 
-                    onClick={askQuestion} 
-                    disabled={!isProcessed || isAskingQuestion || !question.trim()}
-                    className="shrink-0"
-                  >
-                    {isAskingQuestion ? (
-                      <span className="animate-spin">
-                        <Send className="h-4 w-4" />
-                      </span>
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                  </Button>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </MainLayout>
