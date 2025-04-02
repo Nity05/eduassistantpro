@@ -2,6 +2,7 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Background3D from "../components/Background3D";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
+      <Background3D />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const HeroSection = () => {
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-      {/* Background Effects */}
+      {/* Additional Background Effects, but more subtle to complement the 3D background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
@@ -21,7 +21,7 @@ const HeroSection = () => {
             transition={{ duration: 0.5 }}
             className="mb-6"
           >
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-primary/10 text-primary mb-4">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-primary/10 text-primary mb-4 backdrop-blur-sm">
               <Sparkles size={16} className="mr-1" /> For College Students
             </span>
           </motion.div>
@@ -52,7 +52,7 @@ const HeroSection = () => {
           >
             <Link to="/sign-up" className="w-full sm:w-auto">
               <motion.button 
-                className="bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-3.5 rounded-full font-medium transition-all shadow-lg hover:shadow-primary/25 hover:scale-105 w-full sm:w-auto"
+                className="bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-3.5 rounded-full font-medium transition-all shadow-lg hover:shadow-primary/25 hover:scale-105 w-full sm:w-auto backdrop-blur-sm"
                 whileHover={{ y: -5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
