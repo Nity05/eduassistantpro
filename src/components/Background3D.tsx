@@ -1,9 +1,71 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere, MeshDistortMaterial } from "@react-three/drei";
+import { MeshDistortMaterial } from "@react-three/drei";
 import { useTheme } from "next-themes";
 import * as THREE from "three";
+
+// Snow particles component
+const SnowParticles = ({ count = 500 }) => {
+  const mesh = useRef<THREE.Points>(null);
+  const [particles] = useState(() => {
+    const positions = new Float32Array(count * 3);
+    const speeds = new Float32Array(count);
+    
+    for (let i = 0; i < count; i++) {
+      // Positions spread across the scene
+      positions[i * 3] = (Math.random() - 0.5) * 15;      // x
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 15;  // y
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 15;  // z
+      
+      // Random fall speeds
+      speeds[i] = 0.02 + Math.random() * 0.03;
+    }
+    
+    return { positions, speeds };
+  });
+  
+  useFrame(() => {
+    if (!mesh.current) return;
+    
+    const positions = mesh.current.geometry.attributes.position.array as Float32Array;
+    
+    for (let i = 0; i < count; i++) {
+      // Move snow downward
+      positions[i * 3 + 1] -= particles.speeds[i];
+      
+      // Reset position when snow reaches bottom
+      if (positions[i * 3 + 1] < -7) {
+        positions[i * 3 + 1] = 7;
+        // Random horizontal position when respawning
+        positions[i * 3] = (Math.random() - 0.5) * 15;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+      }
+    }
+    
+    mesh.current.geometry.attributes.position.needsUpdate = true;
+  });
+  
+  return (
+    <points ref={mesh}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={particles.positions.length / 3}
+          array={particles.positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.1}
+        color="#ffffff"
+        transparent
+        opacity={0.8}
+        sizeAttenuation
+      />
+    </points>
+  );
+};
 
 const AnimatedSphere = () => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -51,6 +113,7 @@ const Background3D: React.FC = () => {
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 10]} intensity={1} />
         <AnimatedSphere />
+        <SnowParticles />
       </Canvas>
     </div>
   );
