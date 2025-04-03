@@ -32,7 +32,7 @@ const BlogSection = () => {
       id: "3",
       image: "/lovable-uploads/95945800-41f2-4569-94c2-19bffc74e7e8.png",
       title: "Tips to Write Impactful Resume Summaries (With Examples)",
-      excerpt: "In the blink of an eye—literally, under six seconds—a hiring manager decides whether your resume lands in the "yes" or "no" pile. In today's competitive job market, your resume needs to grab a hiring manager's attention in seconds. Let's look at how you can improve yours today!",
+      excerpt: 'In the blink of an eye—literally, under six seconds—a hiring manager decides whether your resume lands in the "yes" or "no" pile. In today\'s competitive job market, your resume needs to grab a hiring manager\'s attention in seconds. Let\'s look at how you can improve yours today!',
       slug: "tips-to-write-impactful-resume-summaries"
     }
   ];
