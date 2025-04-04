@@ -1,6 +1,7 @@
 
 import { createRoot } from 'react-dom/client'
 import { ClerkProvider } from "@clerk/clerk-react";
+import { ThemeProvider } from "next-themes";
 import App from './App.tsx'
 import './index.css'
 
@@ -16,6 +17,8 @@ createRoot(document.getElementById("root")!).render(
     publishableKey={PUBLISHABLE_KEY}
     clerkJSVersion="5.56.0-snapshot.v20250312225817"
   >
-    <App />
+    <ThemeProvider attribute="class" defaultTheme="dark">
+      <App />
+    </ThemeProvider>
   </ClerkProvider>
 );

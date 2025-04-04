@@ -1,99 +1,113 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { MeshDistortMaterial } from "@react-three/drei";
 import { useTheme } from "next-themes";
 import * as THREE from "three";
 
-// Snow particles component
-const SnowParticles = ({ count = 500 }) => {
-  const mesh = useRef<THREE.Points>(null);
+// Math shapes component (pyramids, cubes, cones, etc.)
+const MathShapes = ({ count = 75 }) => {
+  const shapes = useRef<THREE.Group>(null);
   const [particles] = useState(() => {
-    const positions = new Float32Array(count * 3);
-    const speeds = new Float32Array(count);
+    const items = [];
+    const shapeTypes = ['cube', 'tetrahedron', 'cone', 'octahedron', 'icosahedron'];
+    const colors = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#6E59A5'];
     
     for (let i = 0; i < count; i++) {
-      // Positions spread across the scene
-      positions[i * 3] = (Math.random() - 0.5) * 15;      // x
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 15;  // y
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 15;  // z
+      const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const size = 0.1 + Math.random() * 0.2;
+      const position = [
+        (Math.random() - 0.5) * 15, // x
+        (Math.random() - 0.5) * 15, // y
+        (Math.random() - 0.5) * 15  // z
+      ];
+      const rotation = [
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2
+      ];
+      const speed = 0.005 + Math.random() * 0.01;
+      const rotSpeed = 0.005 + Math.random() * 0.01;
       
-      // Random fall speeds
-      speeds[i] = 0.02 + Math.random() * 0.03;
+      items.push({
+        shapeType,
+        color,
+        size,
+        position,
+        rotation,
+        speed,
+        rotSpeed
+      });
     }
     
-    return { positions, speeds };
+    return items;
   });
   
-  useFrame(() => {
-    if (!mesh.current) return;
+  useFrame((state) => {
+    if (!shapes.current) return;
     
-    const positions = mesh.current.geometry.attributes.position.array as Float32Array;
-    
-    for (let i = 0; i < count; i++) {
-      // Move snow downward
-      positions[i * 3 + 1] -= particles.speeds[i];
+    // Update each shape
+    shapes.current.children.forEach((shape, i) => {
+      // Move shape downward
+      shape.position.y -= particles[i].speed;
       
-      // Reset position when snow reaches bottom
-      if (positions[i * 3 + 1] < -7) {
-        positions[i * 3 + 1] = 7;
+      // Rotate shape
+      shape.rotation.x += particles[i].rotSpeed;
+      shape.rotation.y += particles[i].rotSpeed * 0.8;
+      
+      // Reset position when shape reaches bottom
+      if (shape.position.y < -7) {
+        shape.position.y = 7;
         // Random horizontal position when respawning
-        positions[i * 3] = (Math.random() - 0.5) * 15;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+        shape.position.x = (Math.random() - 0.5) * 15;
+        shape.position.z = (Math.random() - 0.5) * 15;
       }
-    }
-    
-    mesh.current.geometry.attributes.position.needsUpdate = true;
+    });
   });
   
   return (
-    <points ref={mesh}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particles.positions.length / 3}
-          array={particles.positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.1}
-        color="#ffffff"
-        transparent
-        opacity={0.8}
-        sizeAttenuation
-      />
-    </points>
-  );
-};
-
-const AnimatedSphere = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const { theme } = useTheme();
-  
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x += 0.003;
-      meshRef.current.rotation.y += 0.003;
-    }
-  });
-
-  const primaryColor = theme === "dark" ? "#396cd8" : "#396cd8";
-  
-  return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1.6, 64, 64]} />
-      <MeshDistortMaterial
-        color={primaryColor}
-        attach="material"
-        distort={0.4}
-        speed={2}
-        roughness={0}
-        metalness={0.2}
-        opacity={0.15}
-        transparent={true}
-      />
-    </mesh>
+    <group ref={shapes}>
+      {particles.map((particle, i) => {
+        let geometry;
+        
+        switch(particle.shapeType) {
+          case 'cube':
+            geometry = <boxGeometry args={[particle.size, particle.size, particle.size]} />;
+            break;
+          case 'tetrahedron':
+            geometry = <tetrahedronGeometry args={[particle.size, 0]} />;
+            break;
+          case 'cone':
+            geometry = <coneGeometry args={[particle.size * 0.6, particle.size, 8]} />;
+            break;
+          case 'octahedron':
+            geometry = <octahedronGeometry args={[particle.size * 0.8, 0]} />;
+            break;
+          case 'icosahedron':
+            geometry = <icosahedronGeometry args={[particle.size * 0.7, 0]} />;
+            break;
+          default:
+            geometry = <boxGeometry args={[particle.size, particle.size, particle.size]} />;
+        }
+        
+        return (
+          <mesh 
+            key={i}
+            position={[particle.position[0], particle.position[1], particle.position[2]]}
+            rotation={[particle.rotation[0], particle.rotation[1], particle.rotation[2]]}
+          >
+            {geometry}
+            <meshStandardMaterial 
+              color={particle.color} 
+              emissive={particle.color} 
+              emissiveIntensity={0.4}
+              transparent 
+              opacity={0.8} 
+            />
+          </mesh>
+        );
+      })}
+    </group>
   );
 };
 
@@ -108,12 +122,11 @@ const Background3D: React.FC = () => {
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 -z-10 opacity-90">
+    <div className="fixed inset-0 -z-10 opacity-70">
       <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 10]} intensity={1} />
-        <AnimatedSphere />
-        <SnowParticles />
+        <MathShapes />
       </Canvas>
     </div>
   );

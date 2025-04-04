@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { setTheme, theme } = useTheme();
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
 
@@ -20,20 +21,12 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -72,7 +65,7 @@ const Navbar = () => {
                 className="p-2 rounded-full hover:bg-secondary transition-colors"
                 aria-label="Toggle theme"
               >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               </button>
               
               {isSignedIn ? (
@@ -97,7 +90,7 @@ const Navbar = () => {
               className="p-2 rounded-full hover:bg-secondary transition-colors"
               aria-label="Toggle theme"
             >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             {isSignedIn && (
               <UserButton afterSignOutUrl="/" />
