@@ -3,6 +3,7 @@ import React, { Suspense } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Background3D from "../components/Background3D";
+import MentorGuard from "../components/MentorGuard";
 import { ClerkLoaded, ClerkLoading } from "@clerk/clerk-react";
 
 interface MainLayoutProps {
@@ -56,6 +57,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       
       <main className="flex-1">{children}</main>
       <Footer />
+      
+      {/* Add the MentorGuard chatbot component */}
+      <MentorGuard />
     </div>
   );
 };
