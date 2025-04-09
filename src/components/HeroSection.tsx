@@ -2,6 +2,7 @@
 import { GraduationCap, Zap, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import ProgressTracker from "./ProgressTracker";
 
 const HeroSection = () => {
   return (
@@ -14,64 +15,75 @@ const HeroSection = () => {
       </div>
       
       <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-4xl text-center mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6"
-          >
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-primary/10 text-primary mb-4 backdrop-blur-sm">
-              <Sparkles size={16} className="mr-1" /> For College Students
-            </span>
-          </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="mx-auto max-w-2xl text-center lg:text-left">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
+            >
+              <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-primary/10 text-primary mb-4 backdrop-blur-sm">
+                <Sparkles size={16} className="mr-1" /> For College Students
+              </span>
+            </motion.div>
+            
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 tracking-tight [text-wrap:balance]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Accelerate Your Career With <span className="text-gradient">AI-Powered</span> Learning
+            </motion.h1>
+            
+            <motion.p 
+              className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 mb-8 [text-wrap:balance]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              CareerTrack helps college students reduce workload and master competitive skills using cutting-edge AI tools.
+            </motion.p>
+            
+            <motion.div 
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Link to="/sign-up" className="w-full sm:w-auto">
+                <motion.button 
+                  className="bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-3.5 rounded-full font-medium transition-all shadow-lg hover:shadow-primary/25 hover:scale-105 w-full sm:w-auto backdrop-blur-sm"
+                  whileHover={{ y: -5 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  Get Started — Free
+                </motion.button>
+              </Link>
+              <Link to="#features" className="w-full sm:w-auto">
+                <motion.button 
+                  className="px-8 py-3.5 rounded-full font-medium border border-border bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all w-full sm:w-auto"
+                  whileHover={{ y: -5 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  Explore Features
+                </motion.button>
+              </Link>
+            </motion.div>
+          </div>
           
-          <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 tracking-tight [text-wrap:balance]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mx-auto max-w-md w-full"
           >
-            Accelerate Your Career With <span className="text-gradient">AI-Powered</span> Learning
-          </motion.h1>
-          
-          <motion.p 
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 [text-wrap:balance]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            CareerTrack helps college students reduce workload and master competitive skills using cutting-edge AI tools.
-          </motion.p>
-          
-          <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <Link to="/sign-up" className="w-full sm:w-auto">
-              <motion.button 
-                className="bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-3.5 rounded-full font-medium transition-all shadow-lg hover:shadow-primary/25 hover:scale-105 w-full sm:w-auto backdrop-blur-sm"
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                Get Started — Free
-              </motion.button>
-            </Link>
-            <Link to="#features" className="w-full sm:w-auto">
-              <motion.button 
-                className="px-8 py-3.5 rounded-full font-medium border border-border bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all w-full sm:w-auto"
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                Explore Features
-              </motion.button>
-            </Link>
+            <ProgressTracker />
           </motion.div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-16">
           <StatCard 
             icon={<GraduationCap size={28} />}
             title="92%"

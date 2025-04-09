@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
     publishableKey={PUBLISHABLE_KEY}
     clerkJSVersion="5.56.0-snapshot.v20250312225817"
   >
-    <ThemeProvider attribute="class" defaultTheme="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
       <App />
     </ThemeProvider>
   </ClerkProvider>
