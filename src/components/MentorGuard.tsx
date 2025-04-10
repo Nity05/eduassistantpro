@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useChatbot } from "@/hooks/useChatbot";
+import ReactMarkdown from "react-markdown";
 
 const MentorGuard = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -168,7 +169,15 @@ const MentorGuard = () => {
                               : "bg-muted rounded-tl-none"
                           }`}
                         >
-                          {message.content}
+                          {message.isUser ? (
+                            message.content
+                          ) : (
+                            <ReactMarkdown 
+                              className="prose prose-sm dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-headings:my-1 prose-li:my-0.5 max-w-none"
+                            >
+                              {message.content}
+                            </ReactMarkdown>
+                          )}
                         </div>
                       </div>
                     ))

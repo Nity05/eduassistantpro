@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -109,6 +110,39 @@
   .glow-text {
     text-shadow: 0 0 10px rgba(57, 108, 216, 0.5);
   }
+}
+
+/* Custom styles for markdown in chatbot */
+.prose code {
+  @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
+}
+
+.prose pre {
+  @apply bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto my-2;
+}
+
+.prose a {
+  @apply text-primary underline;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply font-semibold;
+}
+
+.prose ul, .prose ol {
+  @apply pl-5;
+}
+
+.prose ul {
+  @apply list-disc;
+}
+
+.prose ol {
+  @apply list-decimal;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-700 pl-3 italic;
 }
 
 canvas {
