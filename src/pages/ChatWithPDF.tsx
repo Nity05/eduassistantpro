@@ -39,10 +39,10 @@ const ChatWithPDF = () => {
   };
   
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && !currentChatId) {
       setTimeout(scrollToBottom, 100);
     }
-  }, [messages]);
+  }, [messages, currentChatId]);
   
   useEffect(() => {
     if (messages.length > 0 && isProcessed) {

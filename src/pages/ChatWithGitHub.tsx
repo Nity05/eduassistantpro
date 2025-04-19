@@ -73,6 +73,13 @@ const ChatWithGitHub = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
+  useEffect(() => {
+    // Only scroll on new messages sent by the user, not on loading history
+    if (messages.length > 0 && !currentChatId) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [messages, currentChatId]);
 
   const startNewChat = () => {
     setSessionId(uuidv4());
