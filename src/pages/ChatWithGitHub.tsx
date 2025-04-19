@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import MainLayout from "@/layout/MainLayout";
 import { v4 as uuidv4 } from "uuid";
@@ -10,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
 import ChatHistory from "@/components/ChatHistory";
 import { useChatStorage, ChatSession } from "@/hooks/useChatStorage";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   content: string;
@@ -41,10 +41,8 @@ const ChatWithGitHub = () => {
     scrollToBottom();
   }, [messages]);
   
-  // Save chat whenever messages change
   useEffect(() => {
     if (messages.length > 0 && isIngested) {
-      // Generate a title from the first few characters of the repo URL
       const title = repoUrl
         ? `${repoUrl.replace(/https:\/\/github\.com\/|\.git/g, "").substring(0, 30)}`
         : `Chat ${new Date().toLocaleString()}`;
@@ -53,7 +51,6 @@ const ChatWithGitHub = () => {
     }
   }, [messages, isIngested]);
   
-  // Load chat when currentChatId changes
   useEffect(() => {
     if (currentChatId) {
       const chat = getChat(currentChatId);
@@ -62,7 +59,6 @@ const ChatWithGitHub = () => {
         setMessages(chat.messages);
         setIsIngested(true);
         
-        // Extract repo URL from the first assistant message if possible
         const firstAssistantMsg = chat.messages.find(msg => msg.role === "assistant");
         if (firstAssistantMsg) {
           const repoMatch = firstAssistantMsg.content.match(/Repository\s+(.+?)\s+has been/);
@@ -229,7 +225,6 @@ const ChatWithGitHub = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Chat History Sidebar */}
           <div className="md:col-span-1">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Previous Repositories</h2>
@@ -251,7 +246,6 @@ const ChatWithGitHub = () => {
             />
           </div>
           
-          {/* Main Chat Area */}
           <div className="md:col-span-2">
             {!isIngested ? (
               <div className="mb-8 p-6 border rounded-lg bg-card">
@@ -328,7 +322,20 @@ const ChatWithGitHub = () => {
                               : "bg-muted"
                           }`}
                         >
-                          <div className="whitespace-pre-wrap">{message.content}</div>
+                          {message.role === "assistant" ? (
+                            <div className="prose prose-sm dark:prose-invert max-w-none">
+                              <ReactMarkdown 
+                                components={{
+                                  pre: ({ children }) => <pre className="bg-secondary/50 p-2 rounded-md overflow-x-auto">{children}</pre>,
+                                  code: ({ children }) => <code className="bg-secondary/50 px-1 py-0.5 rounded text-sm">{children}</code>,
+                                }}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
+                            </div>
+                          ) : (
+                            <div className="whitespace-pre-wrap">{message.content}</div>
+                          )}
                           <div
                             className={`text-xs mt-2 ${
                               message.role === "user"

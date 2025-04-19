@@ -360,8 +360,15 @@ const ChatWithPDF = () => {
                           }`}
                         >
                           {message.role === 'assistant' ? (
-                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none">
-                              <ReactMarkdown>{message.content}</ReactMarkdown>
+                            <div className="prose prose-sm dark:prose-invert max-w-none">
+                              <ReactMarkdown 
+                                components={{
+                                  pre: ({ children }) => <pre className="bg-secondary/50 p-2 rounded-md overflow-x-auto">{children}</pre>,
+                                  code: ({ children }) => <code className="bg-secondary/50 px-1 py-0.5 rounded text-sm">{children}</code>,
+                                }}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
                             </div>
                           ) : (
                             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
