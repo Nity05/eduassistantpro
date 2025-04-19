@@ -172,11 +172,11 @@ const MentorGuard = () => {
                           {message.isUser ? (
                             message.content
                           ) : (
-                            <ReactMarkdown 
-                              className="prose prose-sm dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-headings:my-1 prose-li:my-0.5 max-w-none"
-                            >
-                              {message.content}
-                            </ReactMarkdown>
+                            <div className="prose prose-sm dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-headings:my-1 prose-li:my-0.5 max-w-none">
+                              <ReactMarkdown>
+                                {message.content}
+                              </ReactMarkdown>
+                            </div>
                           )}
                         </div>
                       </div>
